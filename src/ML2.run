@@ -1,0 +1,28 @@
+#!/bin/bash --login
+#SBATCH --nodes=1
+#SBATCH -J HP_TF2
+##SBATCH --ntasks=64
+#SBATCH --partition=batch
+#SBATCH --time=72:00:00
+#SBATCH --error=TF_err_%j.err
+#SBATCH --output=TF_out_%j.out
+#SBATCH --gres=gpu:1
+##SBATCH --constraint=cpu_intel_e5_2670
+##SBATCH --workdir=.
+cd ${SLURM_SUBMIT_DIR}
+module load machine_learning
+
+## this requires miniconda to be intalled on the user home
+### follow the instructuons of  
+### https://github.com/kaust-rccl/ibex-miniconda-install
+#echo "...Anaconda env loaded"
+#conda activate ML_env
+
+echo "...running"
+
+python Hyperparameters_TF2_snorkel.py
+
+#python HP_TF2_model_snokel_augmented.py
+#python Hyperparam_search_RFR.py
+#python complete_train_of_models_2.py 
+#python Evaluate_selected_features_no_CR_value_dimers_benchmark-Copy2.py
