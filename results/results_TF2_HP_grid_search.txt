@@ -1,0 +1,75 @@
+...running
+TF Version: 2.4.0
+Pandas  Version: 1.2.5
+Sklearn Version: 0.24.2
+pickle Version : 4.0
+--- Starting trial: run-0
+{'num_units': 8, 'dropout': 0.2, 'optimizer': 'adam'}
+Epoch 00045: early stopping
+4931/4931 - 3s - loss: 0.5119 - acc: 0.8783
+--- Starting trial: run-1
+{'num_units': 8, 'dropout': 0.2, 'optimizer': 'adamax'}
+Epoch 00026: early stopping
+4931/4931 - 3s - loss: 0.4282 - acc: 0.8335
+--- Starting trial: run-2
+{'num_units': 8, 'dropout': 0.2, 'optimizer': 'sgd'}
+Epoch 00037: early stopping
+4931/4931 - 3s - loss: 0.5774 - acc: 0.9288
+--- Starting trial: run-3
+{'num_units': 8, 'dropout': 0.5, 'optimizer': 'adam'}
+Epoch 00027: early stopping
+4931/4931 - 4s - loss: 0.1555 - acc: 0.9431
+--- Starting trial: run-4
+{'num_units': 8, 'dropout': 0.5, 'optimizer': 'adamax'}
+Epoch 00026: early stopping
+4931/4931 - 4s - loss: 0.3006 - acc: 0.9288
+--- Starting trial: run-5
+{'num_units': 8, 'dropout': 0.5, 'optimizer': 'sgd'}
+Epoch 00037: early stopping
+4931/4931 - 3s - loss: 0.5774 - acc: 0.9288
+--- Starting trial: run-6
+{'num_units': 16, 'dropout': 0.2, 'optimizer': 'adam'}
+4931/4931 - 3s - loss: 0.3891 - acc: 0.8866
+--- Starting trial: run-7
+{'num_units': 16, 'dropout': 0.2, 'optimizer': 'adamax'}
+Epoch 00026: early stopping
+4931/4931 - 3s - loss: 0.4997 - acc: 0.9033
+--- Starting trial: run-8
+{'num_units': 16, 'dropout': 0.2, 'optimizer': 'sgd'}
+Epoch 00025: early stopping
+4931/4931 - 3s - loss: nan - acc: 0.9288
+--- Starting trial: run-9
+{'num_units': 16, 'dropout': 0.5, 'optimizer': 'adam'}
+4931/4931 - 3s - loss: 0.4811 - acc: 0.9052
+--- Starting trial: run-10
+{'num_units': 16, 'dropout': 0.5, 'optimizer': 'adamax'}
+Epoch 00026: early stopping
+4931/4931 - 3s - loss: 1.1527 - acc: 0.8004
+--- Starting trial: run-11
+{'num_units': 16, 'dropout': 0.5, 'optimizer': 'sgd'}
+Epoch 00037: early stopping
+4931/4931 - 3s - loss: 0.5774 - acc: 0.9288
+--- Starting trial: run-12
+{'num_units': 32, 'dropout': 0.2, 'optimizer': 'adam'}
+Epoch 00036: early stopping
+4931/4931 - 3s - loss: 0.6117 - acc: 0.9011
+--- Starting trial: run-13
+{'num_units': 32, 'dropout': 0.2, 'optimizer': 'adamax'}
+Epoch 00027: early stopping
+4931/4931 - 4s - loss: 1.5261 - acc: 0.8883
+--- Starting trial: run-14
+{'num_units': 32, 'dropout': 0.2, 'optimizer': 'sgd'}
+Epoch 00025: early stopping
+4931/4931 - 3s - loss: nan - acc: 0.9288
+--- Starting trial: run-15
+{'num_units': 32, 'dropout': 0.5, 'optimizer': 'adam'}
+Epoch 00050: early stopping
+4931/4931 - 3s - loss: 0.2693 - acc: 0.9319
+--- Starting trial: run-16
+{'num_units': 32, 'dropout': 0.5, 'optimizer': 'adamax'}
+Epoch 00026: early stopping
+4931/4931 - 3s - loss: 0.5668 - acc: 0.8673
+--- Starting trial: run-17
+{'num_units': 32, 'dropout': 0.5, 'optimizer': 'sgd'}
+Epoch 00025: early stopping
+4931/4931 - 3s - loss: nan - acc: 0.9288

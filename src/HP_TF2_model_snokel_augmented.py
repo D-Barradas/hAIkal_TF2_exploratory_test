@@ -121,7 +121,7 @@ def build_model():
     model.add(Dense(units=8,activation='relu'))
     model.add(Dropout(0.5))
     model.add(Dense(units=8,activation='relu'))
-    model.add(Dense(units=8,activation='relu')
+    model.add(Dense(units=8,activation='relu'))
 
 
     model.add(Dense(units=1,activation='sigmoid'))
@@ -211,7 +211,7 @@ x_train, y_train, x_val , y_val, x_test , y_test = read_data()
 df = pd.read_csv("../data/snorkel_train_gold_set.csv")
 df.set_index('Conf',inplace=True)
 y_train = df['label_binary'].astype("bool")
-x_train = df.drop(['label_binary','TF2','idx'],axis=1
+x_train = df.drop(['label_binary','TF2','idx'],axis=1)
 x_train= x_train[scoring_functions]
 
 ## train 
@@ -222,15 +222,15 @@ model = build_model()
 
 model.fit(x=x_train,
           y=y_train,
-          epochs=45,
+          epochs=100,
           validation_data=(x_val ,y_val ),
           verbose=1,
-          #callbacks=[early_stop]
+          callbacks=[early_stop]
           )
 
 
 # In[27]:
-model.save('../models/TF2_models_snorkel_trained_v3.h5')
+model.save('../models/TF2_models_snorkel_trained_v2_early_stop.h5')
 
 validation_df_results= save_metrics_results(model=model,
                      x_test=x_val,
@@ -253,7 +253,7 @@ test_df_results= save_metrics_results(model=model,
 print ( test_df_results)
 
 res  = pd.concat([validation_df_results,test_df_results])
-res.to_csv("../results/results_TF2_snorkel_v2.csv")
+res.to_csv("../results/results_TF2_snorkel_v2_early_stop.csv")
 # In[ ]:
 
 
