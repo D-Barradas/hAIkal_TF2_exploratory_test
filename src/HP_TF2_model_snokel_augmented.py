@@ -222,6 +222,10 @@ model = build_model()
 
 model.fit(x=x_train,
           y=y_train,
+
+        #   batch_size=855, #= 4931/4931
+          #batch_size=856, #= 4936/4936
+        #   batch_size=864, #= 4890/4890
           epochs=100,
           validation_data=(x_val ,y_val ),
           verbose=1,

@@ -1,17 +1,13 @@
 import os ,sys 
 import pandas as pd 
-import matplotlib.pyplot as plt
 import numpy as np 
-from operator import itemgetter
-from sklearn.preprocessing import StandardScaler,MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler
 import pickle
-from sklearn.metrics import classification_report,matthews_corrcoef
 
 import sklearn as skl
-import numpy as np 
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
-from tensorflow.keras.layers import Dense, Activation,Dropout
+from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import Dropout
 from tensorflow.keras.callbacks import EarlyStopping
 import shutil
@@ -30,8 +26,8 @@ from tensorboard.plugins.hparams import api as hp
 
 
 # %%get_ipython().run_line_magic('rm', '-rf ./logs/')
-if os.path.isdir("../logs/"):
-    shutil.rmtree("../logs/")
+if os.path.isdir("../logs_2/"):
+    shutil.rmtree("../logs_2/")
 else:
     pass 
 
@@ -140,14 +136,17 @@ y_train = df['label_binary'].astype("bool")
 x_train = df.drop(['label_binary','TF2','idx'],axis=1)
 x_train= x_train[scoring_functions]
 
-HP_NUM_UNITS = hp.HParam('num_units', hp.Discrete([8, 16, 32 ]))
-HP_DROPOUT = hp.HParam('dropout', hp.RealInterval(0.2, 0.5))
-HP_OPTIMIZER = hp.HParam('optimizer', hp.Discrete(['adam', 'sgd','adamax']))
+# HP_NUM_UNITS = hp.HParam('num_units', hp.Discrete([8, 16, 32 ]))
+# HP_DROPOUT = hp.HParam('dropout', hp.RealInterval(0.2, 0.5))
+# HP_OPTIMIZER = hp.HParam('optimizer', hp.Discrete(['adam', 'sgd','adamax']))
 
+HP_NUM_UNITS = hp.HParam('num_units', hp.Discrete([8 ]))
+HP_DROPOUT = hp.HParam('dropout', hp.RealInterval(0.2, 0.5))
+HP_OPTIMIZER = hp.HParam('optimizer', hp.Discrete(['adam']))
 
 METRIC_ACCURACY = 'accuracy'
 
-with tf.summary.create_file_writer('../logs/hparam_tuning').as_default():
+with tf.summary.create_file_writer('../logs_2/hparam_tuning').as_default():
     hp.hparams_config(
     hparams=[HP_NUM_UNITS, HP_DROPOUT, HP_OPTIMIZER],
     metrics=[hp.Metric(METRIC_ACCURACY, display_name='Accuracy')],
@@ -179,7 +178,7 @@ early_stop = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=2
 
 
 
-def train_test_model(hparams, x_train, y_train, x_val, y_val, logdir ):
+def train_test_model(hparams, x_train, y_train, x_val, y_val, logdir, num_units,dropout_rate,optimizer ):
     model = build_model_hp(hparams)
     
     model.fit(x=x_train, 
@@ -192,14 +191,15 @@ def train_test_model(hparams, x_train, y_train, x_val, y_val, logdir ):
                     ]
           )
 
-    loss, accuracy = model.evaluate(x_val, y_val, verbose=2)
+    loss , accuracy = model.evaluate(x_val, y_val, verbose=2)
+    model.save(f'../models/TF2_models_snorkel_trained_{num_units}_{dropout_rate}_{optimizer}.h5')
 #     _, mse = model.evaluate(x_test, y_test) 
     return accuracy
 
 
 # for each run that you could do
  
-def run(run_dir, hparams,x_train, y_train, x_val , y_test):
+def run(run_dir, hparams,x_train, y_train, x_val , y_val ):
     with tf.summary.create_file_writer(run_dir).as_default():
         hp.hparams(hparams)  # record the values used in this trial
         accuracy = train_test_model(hparams, x_train, y_train, x_val , y_val , run_dir)
@@ -223,5 +223,5 @@ for num_units in HP_NUM_UNITS.domain.values:
             run_name = "run-%d" % session_num
             print('--- Starting trial: %s' % run_name)
             print({h.name: hparams[h] for h in hparams})
-            run('../logs/hparam_tuning/' + run_name, hparams, x_train , y_train , x_val, y_val)
+            run('../logs_2/hparam_tuning/' + run_name, hparams, x_train , y_train , x_val, y_val,num_units,dropout_rate,optimizer)
             session_num += 1

@@ -3,7 +3,7 @@
 #SBATCH -J TF2_mod
 ##SBATCH --ntasks=64
 #SBATCH --partition=batch
-#SBATCH --time=04:00:00
+#SBATCH --time=08:00:00
 #SBATCH --error=TF_err_%j.err
 #SBATCH --output=TF_out_%j.out
 #SBATCH --gres=gpu:1
