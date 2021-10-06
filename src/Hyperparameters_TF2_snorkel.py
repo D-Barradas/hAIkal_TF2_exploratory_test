@@ -136,13 +136,13 @@ y_train = df['label_binary'].astype("bool")
 x_train = df.drop(['label_binary','TF2','idx'],axis=1)
 x_train= x_train[scoring_functions]
 
-# HP_NUM_UNITS = hp.HParam('num_units', hp.Discrete([8, 16, 32 ]))
-# HP_DROPOUT = hp.HParam('dropout', hp.RealInterval(0.2, 0.5))
-# HP_OPTIMIZER = hp.HParam('optimizer', hp.Discrete(['adam', 'sgd','adamax']))
-
-HP_NUM_UNITS = hp.HParam('num_units', hp.Discrete([8 ]))
+HP_NUM_UNITS = hp.HParam('num_units', hp.Discrete([8, 16, 32 ]))
 HP_DROPOUT = hp.HParam('dropout', hp.RealInterval(0.2, 0.5))
-HP_OPTIMIZER = hp.HParam('optimizer', hp.Discrete(['adam']))
+HP_OPTIMIZER = hp.HParam('optimizer', hp.Discrete(['adam', 'sgd','adamax']))
+
+# HP_NUM_UNITS = hp.HParam('num_units', hp.Discrete([8 ]))
+# HP_DROPOUT = hp.HParam('dropout', hp.RealInterval(0.2, 0.5))
+# HP_OPTIMIZER = hp.HParam('optimizer', hp.Discrete(['adam']))
 
 METRIC_ACCURACY = 'accuracy'
 
@@ -199,10 +199,10 @@ def train_test_model(hparams, x_train, y_train, x_val, y_val, logdir, num_units,
 
 # for each run that you could do
  
-def run(run_dir, hparams,x_train, y_train, x_val , y_val ):
+def run(run_dir, hparams,x_train, y_train, x_val , y_val, num_units,dropout_rate,optimizer  ):
     with tf.summary.create_file_writer(run_dir).as_default():
         hp.hparams(hparams)  # record the values used in this trial
-        accuracy = train_test_model(hparams, x_train, y_train, x_val , y_val , run_dir)
+        accuracy = train_test_model(hparams, x_train, y_train, x_val , y_val , run_dir, num_units,dropout_rate,optimizer )
         tf.summary.scalar(METRIC_ACCURACY, accuracy, step=1)
 
 
