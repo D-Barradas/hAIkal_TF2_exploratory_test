@@ -1,24 +1,17 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
-
-
-import os ,sys
 import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
 from operator import itemgetter
-from sklearn.preprocessing import StandardScaler,MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler
 import pickle
 from sklearn.metrics import classification_report,matthews_corrcoef
 
 import sklearn as skl
-import numpy as np
 import tensorflow as tf
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Activation,Dropout
-from tensorflow.keras.layers import Dropout
 from tensorflow.keras.callbacks import EarlyStopping
 np.random.seed(101)
 tf.random.set_seed(101)
@@ -112,16 +105,16 @@ def build_model():
 
     model.add(Dense(  units=40,activation='relu',input_dim=x_train.shape[1]))
 
-    model.add(Dense(units=8,activation='relu'))
+    model.add(Dense(units=32,activation='relu'))
     model.add(Dropout(0.5))
-    model.add(Dense(units=8,activation='relu'))
-    model.add(Dense(units=8,activation='relu'))
+    model.add(Dense(units=32,activation='relu'))
+    model.add(Dense(units=32,activation='relu'))
     model.add(Dropout(0.5))
-    model.add(Dense(units=8,activation='relu'))
-    model.add(Dense(units=8,activation='relu'))
+    model.add(Dense(units=32,activation='relu'))
+    model.add(Dense(units=32,activation='relu'))
     model.add(Dropout(0.5))
-    model.add(Dense(units=8,activation='relu'))
-    model.add(Dense(units=8,activation='relu'))
+    model.add(Dense(units=32,activation='relu'))
+    model.add(Dense(units=32,activation='relu'))
 
 
     model.add(Dense(units=1,activation='sigmoid'))
@@ -219,14 +212,13 @@ early_stop = EarlyStopping(monitor='val_loss', mode='min', verbose=1, patience=2
 
 model = build_model()
 
-
 model.fit(x=x_train,
           y=y_train,
 
         #   batch_size=855, #= 4931/4931
           #batch_size=856, #= 4936/4936
         #   batch_size=864, #= 4890/4890
-          epochs=100,
+          epochs=50,
           validation_data=(x_val ,y_val ),
           verbose=1,
           callbacks=[early_stop]

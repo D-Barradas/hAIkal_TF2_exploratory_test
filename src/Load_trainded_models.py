@@ -8,7 +8,7 @@ import tensorflow as tf
 import pandas as pd
 from sklearn.metrics import classification_report, confusion_matrix,accuracy_score,matthews_corrcoef
 from sklearn.model_selection import train_test_split
-import pickle
+import os
 from sklearn.preprocessing import StandardScaler,MinMaxScaler
 import sklearn
 
@@ -75,24 +75,28 @@ def save_metrics_results(model,x_test,y_test,tag):
 
 
 # %%
-my_model_1 = tf.keras.models.load_model("../models/TF2_models_snorkel_trained_v1.h5")
+# my_model_1 = tf.keras.models.load_model("../models/TF2_models_snorkel_trained_v1.h5")
 
 
 # %%
-path2i = "../models/TF2_hp_models_snorkel_trained_v2.h5"
-my_model_2 = tf.keras.models.load_model(path2i)
+# path2i = "../models/TF2_hp_models_snorkel_trained_v2.h5"
+# my_model_2 = tf.keras.models.load_model(path2i)
 
 
 # %%
 def read_data() :
-    path1 = "../data/Clean_dataframe_balanced_all_data_ccharppi_28_march_2020_complete.csv" 
+    path1 = "../data/BM5_analysis_balanced_data.csv" 
     path2 = "../data/Clean_dataframe_unbalanced_all_data_ccharppi_4_march_2020_complete_for_snorkel.csv"
+    #path1 = "../data/Clean_dataframe_balanced_all_data_ccharppi_28_march_2020_complete.csv" 
+    #path2 = "../data/Clean_dataframe_unbalanced_all_data_ccharppi_4_march_2020_complete_for_snorkel.csv"
     df_set_balanced = pd.read_csv(path1,dtype={'class_q': 'object'})
     df_set_unbalanced = pd.read_csv(path2,dtype={'class_q': 'object'})
     
     ### lets read the scorers set ## 
-    path_3 = "../data/Clean_dataframe_balanced_scorers_set_for_snorkel.csv"
-    path_4 = "../data/Clean_dataframe_unbalanced_scorers_set_for_snorkel.csv"
+    path_3 = "../data/Scorers_set_analysis_balanced_data.csv"
+    path_4 = "../data/Scorers_set_analysis_unbalanced_data.csv"
+    # path_3 = "../data/Clean_dataframe_balanced_scorers_set_for_snorkel.csv"
+    # path_4 = "../data/Clean_dataframe_unbalanced_scorers_set_for_snorkel.csv"
     df_scorers_set_balanced = pd.read_csv(path_3)
     df_scorers_set_unbalanced = pd.read_csv(path_4)
     
@@ -160,28 +164,48 @@ x_train, y_train,x_val , y_val, x_test , y_test = read_data()
 
 
 # %%
-tf_v1_val = save_metrics_results(model=my_model_1,x_test=x_val , y_test=y_val , tag="Validation v1")
-tf_v2_val = save_metrics_results(model=my_model_2,x_test=x_val , y_test=y_val , tag="Validation v2")
-tf_v1_test = save_metrics_results(model=my_model_1,x_test=x_test , y_test=y_test , tag="Test_set v1")
-tf_v2_test = save_metrics_results(model=my_model_2,x_test=x_test, y_test=y_test , tag="Test_set v2")
+#tf_v1_val = save_metrics_results(model=my_model_1,x_test=x_val , y_test=y_val , tag="Validation v1")
+#tf_v2_val = save_metrics_results(model=my_model_2,x_test=x_val , y_test=y_val , tag="Validation v2")
+#tf_v1_test = save_metrics_results(model=my_model_1,x_test=x_test , y_test=y_test , tag="Test_set v1")
+#tf_v2_test = save_metrics_results(model=my_model_2,x_test=x_test, y_test=y_test , tag="Test_set v2")
+#
+#
+## %%
+#print (tf_v1_val)
+#
+#
+## %%
+#print (tf_v2_val)
+#
+#
+## %%
+#print(tf_v1_test)
+#
+#
+## %%
+#print(tf_v2_test)
 
 
 # %%
-print (tf_v1_val)
-
-
-# %%
-print (tf_v2_val)
-
+models = [m for m in os.listdir("../models/") if m[-3:] == ".h5" ]
+# print (models)
 
 # %%
-print(tf_v1_test)
+all_results_test , all_results_validation = [], [] 
+for model in models :
+    # print (model) 
+    my_model_1 = tf.keras.models.load_model(f"../models/{model}")
+    tf_test = save_metrics_results(model=my_model_1,x_test=x_test, y_test=y_test , tag=f"{model}")
+    all_results_test.append(tf_test)
+    tf_val = save_metrics_results(model=my_model_1,x_test=x_val, y_test=y_val , tag=f"{model}" )
+    all_results_validation.append(tf_val)
+df_all_results = pd.concat(all_results_test)
+print (df_all_results.sort_values("Accuracy",ascending=False))
+df_all_results = df_all_results.sort_values("Accuracy",ascending=False)
+df_all_results.to_csv("../results/TF2_models_test_scorers_set_results_metrics.csv")
 
 
-# %%
-print(tf_v2_test)
-
-
-# %%
-
-
+df_all_results = pd.concat(all_results_validation)
+print (df_all_results.sort_values("Accuracy",ascending=False))
+df_all_results = df_all_results.sort_values("Accuracy",ascending=False)
+df_all_results.to_csv("../results/TF2_models_validation_metrics.csv")
