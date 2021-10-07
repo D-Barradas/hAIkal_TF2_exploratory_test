@@ -218,7 +218,7 @@ model.fit(x=x_train,
         #   batch_size=855, #= 4931/4931
           #batch_size=856, #= 4936/4936
         #   batch_size=864, #= 4890/4890
-          epochs=50,
+          epochs=18,
           validation_data=(x_val ,y_val ),
           verbose=1,
           callbacks=[early_stop]

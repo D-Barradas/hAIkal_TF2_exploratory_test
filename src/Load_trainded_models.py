@@ -127,17 +127,23 @@ def read_data() :
     y_train = df_set_balanced[~df_set_balanced["idx"].isin(PDB_BM5)]["label_binary"].astype("bool")
     x_val = df_set_unbalanced[df_set_unbalanced["idx"].isin(PDB_BM5)]
     y_val = df_set_unbalanced[df_set_unbalanced["idx"].isin(PDB_BM5)]["label_binary"].astype("bool")
+    x_val_bal = df_set_balanced[df_set_balanced["idx"].isin(PDB_BM5)]
+    y_val_bal = df_set_balanced[df_set_balanced["idx"].isin(PDB_BM5)]["label_binary"].astype("bool")
     x_test = df_scorers_set_unbalanced
     y_test = df_scorers_set_unbalanced["label_binary"].astype("bool")
+    x_test_bal = df_scorers_set_balanced
+    y_test_bal = df_scorers_set_balanced["label_binary"].astype("bool")
     
     ## Select the features for the sets 
     x_train= x_train[scoring_functions] 
 #     x_train= x_train.drop(['label_binary','TF2','idx'],axis=1)
 
     x_val  = x_val[scoring_functions]
+    x_val_bal  = x_val_bal[scoring_functions]
 #     x_val = x_val.drop(['label_binary','TF2','idx'],axis=1)
     
     x_test = x_test[scoring_functions]
+    x_test_bal = x_test_bal[scoring_functions]
 #     x_test = x_test.drop(['label_binary','TF2','idx'],axis=1)
     
     ## Make a copy for handeling better 
@@ -148,6 +154,10 @@ def read_data() :
     y_val = y_val.copy()
     x_test = x_test.copy()
     y_test= y_test.copy()
+    x_val_bal = x_val_bal.copy()
+    y_val_bal = y_val_bal.copy()
+    x_test_bal = x_test_bal.copy()
+    y_test_bal= y_test_bal.copy()
     
     # scale 
     min_max_scaler = MinMaxScaler()
@@ -156,11 +166,13 @@ def read_data() :
             x_train[classifier] = min_max_scaler.fit_transform(x_train[classifier].values.reshape(-1,1))
             x_val[classifier]  = min_max_scaler.transform(x_val[classifier].values.reshape(-1,1))
             x_test[classifier]  = min_max_scaler.transform(x_test[classifier].values.reshape(-1,1))
-    return x_train, y_train,x_val , y_val, x_test , y_test
+            x_val_bal[classifier]  = min_max_scaler.transform(x_val_bal[classifier].values.reshape(-1,1))
+            x_test_bal[classifier]  = min_max_scaler.transform(x_test_bal[classifier].values.reshape(-1,1))
+    return x_train, y_train,x_val , y_val, x_test , y_test , x_val_bal , y_val_bal , x_test_bal , y_test_bal
 
 
 # %%
-x_train, y_train,x_val , y_val, x_test , y_test = read_data()
+x_train, y_train,x_val , y_val, x_test , y_test , x_val_bal , y_val_bal , x_test_bal , y_test_bal= read_data()
 
 
 # %%
@@ -192,6 +204,7 @@ models = [m for m in os.listdir("../models/") if m[-3:] == ".h5" ]
 
 # %%
 all_results_test , all_results_validation = [], [] 
+all_results_test_bal , all_results_validation_bal = [], [] 
 for model in models :
     # print (model) 
     my_model_1 = tf.keras.models.load_model(f"../models/{model}")
@@ -199,13 +212,25 @@ for model in models :
     all_results_test.append(tf_test)
     tf_val = save_metrics_results(model=my_model_1,x_test=x_val, y_test=y_val , tag=f"{model}" )
     all_results_validation.append(tf_val)
-df_all_results = pd.concat(all_results_test)
-print (df_all_results.sort_values("Accuracy",ascending=False))
-df_all_results = df_all_results.sort_values("Accuracy",ascending=False)
+    tf_test_bal = save_metrics_results(model=my_model_1,x_test=x_test_bal, y_test=y_test_bal , tag=f"{model}")
+    all_results_test_bal.append(tf_test_bal)
+    tf_val_bal = save_metrics_results(model=my_model_1,x_test=x_val_bal, y_test=y_val_bal , tag=f"{model}" )
+    all_results_validation_bal.append(tf_val_bal)
+
+def sort_my_df(all_results_test):
+    df_all_results = pd.concat(all_results_test)
+    print (df_all_results.sort_values("Accuracy",ascending=False),end="\n")
+    df_all_results = df_all_results.sort_values("Accuracy",ascending=False)
+    return df_all_results
+
+df_all_results = sort_my_df(all_results_test)
 df_all_results.to_csv("../results/TF2_models_test_scorers_set_results_metrics.csv")
 
-
-df_all_results = pd.concat(all_results_validation)
-print (df_all_results.sort_values("Accuracy",ascending=False))
-df_all_results = df_all_results.sort_values("Accuracy",ascending=False)
+df_all_results = sort_my_df(all_results_validation)
 df_all_results.to_csv("../results/TF2_models_validation_metrics.csv")
+
+df_all_results = sort_my_df(all_results_test_bal)
+df_all_results.to_csv("../results/TF2_models_test_scorers_set_results_metrics_balanced.csv")
+
+df_all_results = sort_my_df(all_results_validation_bal)
+df_all_results.to_csv("../results/TF2_models_validation_metrics_balanced.csv")
