@@ -6,10 +6,10 @@ import tensorflow as tf
 
 # %%
 import pandas as pd
-from sklearn.metrics import classification_report, confusion_matrix,accuracy_score,matthews_corrcoef
+from sklearn.metrics import classification_report, matthews_corrcoef, confusion_matrix
 from sklearn.model_selection import train_test_split
 import os
-from sklearn.preprocessing import StandardScaler,MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler
 import sklearn
 
 
@@ -48,9 +48,19 @@ def save_metrics_results(model,x_test,y_test,tag):
     # target_names = ['Incorrect', 'Correct']
 
     # y_pred = model.predict_classes(x_test.to_numpy())
-    y_pred = (model.predict(x_test.to_numpy()) > 0.5).astype("int32")
-    cr = classification_report(y_true=y_test, y_pred=y_pred,output_dict=True,digits=4)
-    mmc = matthews_corrcoef(y_true=y_test, y_pred=y_pred)
+    # y_pred = (model.predict(x_test.to_numpy()) > 0.5).astype("int32")
+    y_pred = (model.predict(x_test.to_numpy()) > 0.5).astype("bool")
+
+    cr = classification_report(y_true=y_test, y_pred=y_pred,output_dict=True,digits=4,zero_division=0)
+    tn, fp, fn, tp = confusion_matrix(y_true=y_test, y_pred=y_pred).ravel()
+    # print (tn, fp, fn, tp)
+    ### this depends on the opinion, having these values at zero, is that the model just returns one label 
+    ### while MMC = 0 is basically random prediction , could be interpreted as bad classification
+    ## I set the value of MMC to -1 beacuase is the worst case 
+    if fp != 0 and tp != 0 :
+        mmc = matthews_corrcoef(y_true=y_test, y_pred=y_pred)
+    else : 
+        mmc = -1 
     # print (cr)
     acc = cr["accuracy"]
     rec_false = cr["False"]["recall"]
@@ -73,17 +83,78 @@ def save_metrics_results(model,x_test,y_test,tag):
     mean_df = pd.DataFrame(data=results,index=[f"{tag}"])
     return mean_df.round(4)
 
+def get_success_rate(df,sel,tag):
+    """this funtion read a pandas dataframe and that dataframe need the columns
+    idx , proba_true , and the label_binary"""
+    total_size = {"val":float(len(PDB_BM5)),"test":float(15)}
+    
+    tops = [1,10,100,1000]
+    tcount = [0 for y in range(len(tops))]
+    names = [ [] for y in range(len(tops))]
+    ranks = []
+    for m in df['idx'].unique():
+#         print (m, end=" ")
+        found = False
+        count = 0
+        selection = df[df["idx"]==m]
+        selection= selection.sort_values(by=["proba_true"], ascending=False)
+#         print (selection)
+        for x in selection["label_binary"].values:
+            count +=1
+            if x != False:
+#                 print (x,count)
+                if not found:
+                    rank = count
+                    ranks.append(count)
+                found = True
+        if found:
 
-# %%
-# my_model_1 = tf.keras.models.load_model("../models/TF2_models_snorkel_trained_v1.h5")
+            for z in range(len(tops)):
+                if  rank < tops[z]+1:
+                    tcount[z] += 1
+                    if m not in names:
+                        names[z].append(m)
+
+    print (tag,tcount ,sel ) 
+    results_rank = []
+    for y in tcount:
+        print ( round(float(y)/total_size[sel],4)*100 , end=" ")
+        results_rank.append(round(float(y)/total_size[sel],4)*100)
+    print()
+    df_result =  pd.DataFrame(results_rank,index=[tops])
+    df_result.columns = [f"{tag}"]
+    # df_result = df_result.T
+    return df_result.round(4)
+#         print ( float(y) )
+    #     print (y)
+     #   print ( round(float(y)/total_size[sel],4)*100 , end=" ")
+    #print ()
+    # for m in names:
+    #     print (m)
 
 
-# %%
-# path2i = "../models/TF2_hp_models_snorkel_trained_v2.h5"
-# my_model_2 = tf.keras.models.load_model(path2i)
+def convert_pred(model , my_x, my_y, tag ):
+    """ this funtions will get the columns neseray to create a dataframe to analize the success rate """
+    df_pred = pd.DataFrame( model.predict(my_x.to_numpy()))
+    df_pred = df_pred.set_index( my_x.index ) 
+    label_binary = my_y
+    idx = []
+
+    if tag == "test":
+        idx = [ x.split("_")[0] for x in my_x.index ]
+        idx = pd.Series(idx, index=my_x.index)
+
+    elif tag == "val":
+        idx = [ x.split("_")[1] for x in my_x.index ]
+        idx = pd.Series(idx, index=my_x.index)
+
+    df_pred = pd.concat( [idx ,label_binary, df_pred ], axis=1)
+    df_pred.columns = ["idx","label_binary","proba_true"]
+    
+    return df_pred
 
 
-# %%
+
 def read_data() :
     path1 = "../data/BM5_analysis_balanced_data.csv" 
     path2 = "../data/Clean_dataframe_unbalanced_all_data_ccharppi_4_march_2020_complete_for_snorkel.csv"
@@ -175,28 +246,6 @@ def read_data() :
 x_train, y_train,x_val , y_val, x_test , y_test , x_val_bal , y_val_bal , x_test_bal , y_test_bal= read_data()
 
 
-# %%
-#tf_v1_val = save_metrics_results(model=my_model_1,x_test=x_val , y_test=y_val , tag="Validation v1")
-#tf_v2_val = save_metrics_results(model=my_model_2,x_test=x_val , y_test=y_val , tag="Validation v2")
-#tf_v1_test = save_metrics_results(model=my_model_1,x_test=x_test , y_test=y_test , tag="Test_set v1")
-#tf_v2_test = save_metrics_results(model=my_model_2,x_test=x_test, y_test=y_test , tag="Test_set v2")
-#
-#
-## %%
-#print (tf_v1_val)
-#
-#
-## %%
-#print (tf_v2_val)
-#
-#
-## %%
-#print(tf_v1_test)
-#
-#
-## %%
-#print(tf_v2_test)
-
 
 # %%
 models = [m for m in os.listdir("../models/") if m[-3:] == ".h5" ]
@@ -205,8 +254,9 @@ models = [m for m in os.listdir("../models/") if m[-3:] == ".h5" ]
 # %%
 all_results_test , all_results_validation = [], [] 
 all_results_test_bal , all_results_validation_bal = [], [] 
+success_rate_test, success_rate_val = [] ,[] 
 for model in models :
-    # print (model) 
+    
     my_model_1 = tf.keras.models.load_model(f"../models/{model}")
     tf_test = save_metrics_results(model=my_model_1,x_test=x_test, y_test=y_test , tag=f"{model}")
     all_results_test.append(tf_test)
@@ -216,12 +266,24 @@ for model in models :
     all_results_test_bal.append(tf_test_bal)
     tf_val_bal = save_metrics_results(model=my_model_1,x_test=x_val_bal, y_test=y_val_bal , tag=f"{model}" )
     all_results_validation_bal.append(tf_val_bal)
+    df_pred = convert_pred ( my_model_1, x_test, y_test ,"test" )
+    # print (df_pred.head())
+    success_rate_test.append( get_success_rate(df_pred,"test",tag=f"{model}") )
+
+    df_pred = convert_pred ( my_model_1, x_val, y_val ,"val"  )
+    success_rate_val.append(get_success_rate ( df_pred,"val", tag=f'{model}' ) )
+    # print (df_pred.head())
+
+
+
 
 def sort_my_df(all_results_test):
     df_all_results = pd.concat(all_results_test)
-    print (df_all_results.sort_values("Accuracy",ascending=False),end="\n")
+    # print (df_all_results.sort_values("Accuracy",ascending=False),end="\n")
     df_all_results = df_all_results.sort_values("Accuracy",ascending=False)
     return df_all_results
+
+# print ( my_model_1.summary() ) 
 
 df_all_results = sort_my_df(all_results_test)
 df_all_results.to_csv("../results/TF2_models_test_scorers_set_results_metrics.csv")
@@ -234,3 +296,12 @@ df_all_results.to_csv("../results/TF2_models_test_scorers_set_results_metrics_ba
 
 df_all_results = sort_my_df(all_results_validation_bal)
 df_all_results.to_csv("../results/TF2_models_validation_metrics_balanced.csv")
+
+SR_val = pd.concat(success_rate_val,axis=1)
+SR_test = pd.concat(success_rate_test, axis=1)
+
+# print (SR_test)
+# print(SR_val)
+
+SR_val.T.to_csv("../results/success_rate_validation_TF2_models.csv")
+SR_test.T.to_csv("../results/success_rate_test_TF2_models.csv")

@@ -11,10 +11,10 @@ TF2_models_snorkel_trained_8_0.2_adamax.h5,0.8379,0.7462,0.9296,0.9138,0.7855,0.
 TF2_models_snorkel_trained_16_0.5_adamax.h5,0.8357,0.7443,0.9271,0.9108,0.7838,0.8192,0.8495,0.6829
 TF2_models_snorkel_trained_8_0.5_adam.h5,0.8355,0.9205,0.7506,0.7868,0.9042,0.8484,0.8203,0.681
 TF2_models_snorkel_trained_32_0.5_adam.h5,0.5733,0.998,0.1485,0.5396,0.9867,0.7005,0.2582,0.2777
-TF2_models_snorkel_trained_8_0.5_sgd.h5,0.5,1.0,0.0,0.5,0.0,0.6667,0.0,0.0
-TF2_models_snorkel_trained_16_0.2_sgd.h5,0.5,1.0,0.0,0.5,0.0,0.6667,0.0,0.0
-TF2_models_snorkel_trained_16_0.5_sgd.h5,0.5,1.0,0.0,0.5,0.0,0.6667,0.0,0.0
-TF2_models_snorkel_trained_32_0.2_sgd.h5,0.5,1.0,0.0,0.5,0.0,0.6667,0.0,0.0
-TF2_models_snorkel_trained_8_0.2_sgd.h5,0.5,1.0,0.0,0.5,0.0,0.6667,0.0,0.0
-TF2_models_snorkel_trained_32_0.5_sgd.h5,0.5,1.0,0.0,0.5,0.0,0.6667,0.0,0.0
-TF2_models_snorkel_trained_8_0.5_adamax.h5,0.5,1.0,0.0,0.5,0.0,0.6667,0.0,0.0
+TF2_models_snorkel_trained_8_0.5_sgd.h5,0.5,1.0,0.0,0.5,0.0,0.6667,0.0,-1.0
+TF2_models_snorkel_trained_16_0.2_sgd.h5,0.5,1.0,0.0,0.5,0.0,0.6667,0.0,-1.0
+TF2_models_snorkel_trained_16_0.5_sgd.h5,0.5,1.0,0.0,0.5,0.0,0.6667,0.0,-1.0
+TF2_models_snorkel_trained_32_0.2_sgd.h5,0.5,1.0,0.0,0.5,0.0,0.6667,0.0,-1.0
+TF2_models_snorkel_trained_8_0.2_sgd.h5,0.5,1.0,0.0,0.5,0.0,0.6667,0.0,-1.0
+TF2_models_snorkel_trained_32_0.5_sgd.h5,0.5,1.0,0.0,0.5,0.0,0.6667,0.0,-1.0
+TF2_models_snorkel_trained_8_0.5_adamax.h5,0.5,1.0,0.0,0.5,0.0,0.6667,0.0,-1.0
