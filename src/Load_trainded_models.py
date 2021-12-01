@@ -46,11 +46,16 @@ scoring_functions = ['CONSRANK_val', 'CP_HLPL', 'CP_MJ3h', 'DDG_V', 'CP_RMFCA', 
 # %%
 def save_metrics_results(model,x_test,y_test,tag):
     # target_names = ['Incorrect', 'Correct']
-
+    print (x_test)
+    print()
     # y_pred = model.predict_classes(x_test.to_numpy())
     # y_pred = (model.predict(x_test.to_numpy()) > 0.5).astype("int32")
     y_pred = (model.predict(x_test.to_numpy()) > 0.5).astype("bool")
-
+    # y_pred = model.eval
+    y_pred = (model.predict(x_test) > 0.5).astype("bool")
+    print(y_pred)
+    print()
+    print(y_test)
     cr = classification_report(y_true=y_test, y_pred=y_pred,output_dict=True,digits=4,zero_division=0)
     tn, fp, fn, tp = confusion_matrix(y_true=y_test, y_pred=y_pred).ravel()
     # print (tn, fp, fn, tp)
@@ -247,8 +252,9 @@ x_train, y_train,x_val , y_val, x_test , y_test , x_val_bal , y_val_bal , x_test
 
 
 
-# %%
-models = [m for m in os.listdir("../models/") if m[-3:] == ".h5" ]
+# %%ls 
+#models = [m for m in os.listdir("../models/") if m[-5:] == "_1.h5" ]
+models = [m for m in os.listdir("../models/") if "adam_1.h5" in m ]
 # print (models)
 
 # %%
@@ -256,10 +262,10 @@ all_results_test , all_results_validation = [], []
 all_results_test_bal , all_results_validation_bal = [], [] 
 success_rate_test, success_rate_val = [] ,[] 
 for model in models :
-    
+    print (f"model = {model}")    
     my_model_1 = tf.keras.models.load_model(f"../models/{model}")
-    tf_test = save_metrics_results(model=my_model_1,x_test=x_test, y_test=y_test , tag=f"{model}")
-    all_results_test.append(tf_test)
+    # tf_test = save_metrics_results(model=my_model_1,x_test=x_test, y_test=y_test , tag=f"{model}")
+    # all_results_test.append(tf_test)
     tf_val = save_metrics_results(model=my_model_1,x_test=x_val, y_test=y_val , tag=f"{model}" )
     all_results_validation.append(tf_val)
     tf_test_bal = save_metrics_results(model=my_model_1,x_test=x_test_bal, y_test=y_test_bal , tag=f"{model}")
@@ -286,16 +292,16 @@ def sort_my_df(all_results_test):
 # print ( my_model_1.summary() ) 
 
 df_all_results = sort_my_df(all_results_test)
-df_all_results.to_csv("../results/TF2_models_test_scorers_set_results_metrics.csv")
+df_all_results.to_csv("../results/TF2_models_test_scorers_set_results_metrics_arch.csv")
 
 df_all_results = sort_my_df(all_results_validation)
-df_all_results.to_csv("../results/TF2_models_validation_metrics.csv")
+df_all_results.to_csv("../results/TF2_models_validation_metrics_arch.csv")
 
 df_all_results = sort_my_df(all_results_test_bal)
-df_all_results.to_csv("../results/TF2_models_test_scorers_set_results_metrics_balanced.csv")
+df_all_results.to_csv("../results/TF2_models_test_scorers_set_results_metrics_balanced_arch.csv")
 
 df_all_results = sort_my_df(all_results_validation_bal)
-df_all_results.to_csv("../results/TF2_models_validation_metrics_balanced.csv")
+df_all_results.to_csv("../results/TF2_models_validation_metrics_balanced_arch.csv")
 
 SR_val = pd.concat(success_rate_val,axis=1)
 SR_test = pd.concat(success_rate_test, axis=1)
@@ -303,5 +309,7 @@ SR_test = pd.concat(success_rate_test, axis=1)
 # print (SR_test)
 # print(SR_val)
 
-SR_val.T.to_csv("../results/success_rate_validation_TF2_models.csv")
-SR_test.T.to_csv("../results/success_rate_test_TF2_models.csv")
+#SR_val.T.to_csv("../results/success_rate_validation_TF2_models.csv")
+#SR_test.T.to_csv("../results/success_rate_test_TF2_models.csv")
+SR_val.T.to_csv("../results/success_rate_validation_TF2_models_arch.csv")
+SR_test.T.to_csv("../results/success_rate_test_TF2_models_arch.csv")

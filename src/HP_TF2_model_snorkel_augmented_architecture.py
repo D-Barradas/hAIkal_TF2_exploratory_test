@@ -71,7 +71,7 @@ def build_model_hp(hparams):
         # model.add(Dense( units=hparams[HP_NUM_UNITS],activation='relu'))
         # model.add(Dropout(hparams[HP_DROPOUT]))
         # model_name = f"Dense_Dropout_{i}"
-
+    model.add(Dense(units=1,activation='sigmoid'))
     optimizer = hparams[HP_OPTIMIZER]
     model.compile(loss='binary_crossentropy', optimizer=optimizer,metrics=['acc'])
     return model
