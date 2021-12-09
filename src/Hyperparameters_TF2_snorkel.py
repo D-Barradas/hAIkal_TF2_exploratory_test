@@ -26,8 +26,11 @@ from tensorboard.plugins.hparams import api as hp
 
 
 # %%get_ipython().run_line_magic('rm', '-rf ./logs/')
-if os.path.isdir("../logs_2/"):
-    shutil.rmtree("../logs_2/")
+## name the folder for tensorboard results 
+folder_name = "Ori"
+
+if os.path.isdir(f"../{folder_name}/"):
+    shutil.rmtree(f"../{folder_name}/")
 else:
     pass 
 
@@ -130,11 +133,11 @@ x_train, y_train,x_val , y_val, x_test , y_test = read_data()
 ## redifine x_train and y_train 
 ## coment this section for normal train
 
-df = pd.read_csv("../data/snorkel_train_gold_set.csv")
-df.set_index('Conf',inplace=True)
-y_train = df['label_binary'].astype("bool")
-x_train = df.drop(['label_binary','TF2','idx'],axis=1)
-x_train= x_train[scoring_functions]
+# df = pd.read_csv("../data/snorkel_train_gold_set.csv")
+# df.set_index('Conf',inplace=True)
+# y_train = df['label_binary'].astype("bool")
+# x_train = df.drop(['label_binary','TF2','idx'],axis=1)
+# x_train= x_train[scoring_functions]
 
 HP_NUM_UNITS = hp.HParam('num_units', hp.Discrete([8, 16, 32 ]))
 HP_DROPOUT = hp.HParam('dropout', hp.RealInterval(0.2, 0.5))
@@ -146,7 +149,7 @@ HP_OPTIMIZER = hp.HParam('optimizer', hp.Discrete(['adam', 'sgd','adamax']))
 
 METRIC_ACCURACY = 'accuracy'
 
-with tf.summary.create_file_writer('../logs_2/hparam_tuning').as_default():
+with tf.summary.create_file_writer(f'../{folder_name}/hparam_tuning').as_default():
     hp.hparams_config(
     hparams=[HP_NUM_UNITS, HP_DROPOUT, HP_OPTIMIZER],
     metrics=[hp.Metric(METRIC_ACCURACY, display_name='Accuracy')],
@@ -192,7 +195,8 @@ def train_test_model(hparams, x_train, y_train, x_val, y_val, logdir, num_units,
           )
 
     loss , accuracy = model.evaluate(x_val, y_val, verbose=2)
-    model.save(f'../models/TF2_models_snorkel_trained_{num_units}_{dropout_rate}_{optimizer}.h5')
+    #model.save(f'../models/TF2_models_snorkel_trained_{num_units}_{dropout_rate}_{optimizer}.h5')
+    model.save(f'../models/TF2_models_original_trained_{num_units}_{dropout_rate}_{optimizer}.h5')
 #     _, mse = model.evaluate(x_test, y_test) 
     return accuracy
 
@@ -223,5 +227,5 @@ for num_units in HP_NUM_UNITS.domain.values:
             run_name = "run-%d" % session_num
             print('--- Starting trial: %s' % run_name)
             print({h.name: hparams[h] for h in hparams})
-            run('../logs_2/hparam_tuning/' + run_name, hparams, x_train , y_train , x_val, y_val,num_units,dropout_rate,optimizer)
+            run(f'../{folder_name}/hparam_tuning/' + run_name, hparams, x_train , y_train , x_val, y_val,num_units,dropout_rate,optimizer)
             session_num += 1
