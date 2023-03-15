@@ -1,6 +1,7 @@
 #data is actually too heavy to be uploaded to github
 data/
-
+# This model is too heavy to be uploaded to github
+models/RFC_haikal_for_Ws.pickle
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
