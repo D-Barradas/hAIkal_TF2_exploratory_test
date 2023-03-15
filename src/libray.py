@@ -22,6 +22,9 @@ target_classifiers =  ['AP_DARS', 'AP_DDG_W', 'AP_DFIRE2', 'AP_GOAP_DF', 'AP_MPS
         'idx', 'RFC', 'TF2','NNC', 'label_binary'
                       ]
 scoring_functions = ['CONSRANK_val', 'CP_HLPL', 'CP_MJ3h', 'DDG_V', 'CP_RMFCA', 'AP_GOAP_DF', 'NNC', 'RFC']
+# scoring_functions = ['CONSRANK_val', 'CP_HLPL', 'CP_MJ3h', 'DDG_V', 'CP_RMFCA', 'AP_GOAP_DF']
+
+scoring_functions_gold = ['CONSRANK_val', 'CP_HLPL', 'CP_MJ3h', 'DDG_V', 'CP_RMFCA', 'AP_GOAP_DF', 'NNC', 'RFC']
 
 
 def read_data() :
@@ -74,6 +77,11 @@ def read_data() :
     x_test_bal = df_scorers_set_balanced
     y_test_bal = df_scorers_set_balanced["label_binary"].astype("bool")
     
+    x_ml_classifer_test = x_test[["RFC","NNC","TF2"]] 
+    x_ml_classifer_test_bal = x_test_bal[["RFC","NNC","TF2"]] 
+    x_ml_classifer = x_val[["RFC","NNC","TF2"]] 
+    x_ml_classifer_bal = x_val_bal[["RFC","NNC","TF2"]] 
+
     ## Select the features for the sets 
     x_train= x_train[scoring_functions] 
 #     x_train= x_train.drop(['label_binary','TF2','idx'],axis=1)
@@ -98,6 +106,7 @@ def read_data() :
     y_val_bal = y_val_bal.copy()
     x_test_bal = x_test_bal.copy()
     y_test_bal= y_test_bal.copy()
+
     
     # scale 
     min_max_scaler = MinMaxScaler()
@@ -108,7 +117,8 @@ def read_data() :
             x_test[classifier]  = min_max_scaler.transform(x_test[classifier].values.reshape(-1,1))
             x_val_bal[classifier]  = min_max_scaler.transform(x_val_bal[classifier].values.reshape(-1,1))
             x_test_bal[classifier]  = min_max_scaler.transform(x_test_bal[classifier].values.reshape(-1,1))
-    return x_train, y_train,x_val , y_val, x_test , y_test , x_val_bal , y_val_bal , x_test_bal , y_test_bal
+    return x_train, y_train, x_val , y_val, x_test , y_test , x_val_bal , y_val_bal , x_test_bal , y_test_bal, x_ml_classifer,x_ml_classifer_test, x_ml_classifer_bal, x_ml_classifer_test_bal
+    # return x_train, y_train,x_val , y_val, x_test , y_test , x_val_bal , y_val_bal , x_test_bal , y_test_bal
 
 
 def save_metrics_results(model,x_test,y_test,tag):
@@ -235,3 +245,37 @@ def convert_pred(model , my_x, my_y, tag ):
     
     return df_pred
 
+def read_data_gold_data() :
+    """This funtion takes the data that is already standarized """
+    path1 = "../data/snorkel_train_gold_set.csv" 
+    path2 = "../data/Clean_dataframe_unbalanced_all_data_ccharppi_4_march_2020_complete_for_snorkel.csv"
+
+
+    df_set_balanced = pd.read_csv(path1)
+    df_set_unbalanced = pd.read_csv(path2,dtype={'class_q': 'object'})
+
+ 
+    df_set_balanced.set_index("Conf",inplace=True)
+    df_set_unbalanced.rename(columns={'NIS Polar' :'NIS_Polar',
+                            'Nis Apolar':'Nis_Apolar',
+                            'BSA Apolar':'BSA_Apolar',
+                            'BSA Polar' :'BSA_Polar'},inplace=True)
+    df_set_unbalanced.set_index("Conf",inplace=True) 
+    
+     ## Split into Training , validation and Testing Sets 
+    x_train = df_set_balanced[~df_set_balanced["idx"].isin(PDB_BM5)]
+    y_train = df_set_balanced[~df_set_balanced["idx"].isin(PDB_BM5)]["label_binary"].astype("bool")
+    x_val = df_set_unbalanced[df_set_unbalanced["idx"].isin(PDB_BM5)]
+    y_val = df_set_unbalanced[df_set_unbalanced["idx"].isin(PDB_BM5)]["label_binary"].astype("bool")
+    
+    ## Select the features for the sets 
+    x_train= x_train[scoring_functions]
+    x_val= x_val[scoring_functions]
+
+    ## Make a copy for handling better 
+    
+    x_train = x_train.copy()
+    y_train = y_train.copy()
+    x_val = x_val.copy()
+    y_val = y_val.copy()
+    return x_train, y_train,x_val,y_val

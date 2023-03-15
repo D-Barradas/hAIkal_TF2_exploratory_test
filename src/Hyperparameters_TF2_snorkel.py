@@ -27,7 +27,7 @@ from tensorboard.plugins.hparams import api as hp
 
 # %%get_ipython().run_line_magic('rm', '-rf ./logs/')
 ## name the folder for tensorboard results 
-folder_name = "Ori"
+folder_name = "Original"
 
 if os.path.isdir(f"../{folder_name}/"):
     shutil.rmtree(f"../{folder_name}/")
